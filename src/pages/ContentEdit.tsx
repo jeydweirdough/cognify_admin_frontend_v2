@@ -121,7 +121,7 @@ const ContentEdit: React.FC<{ user: User }> = ({ user }) => {
   };
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-20">
+    <div className="space-y-6 w-full pb-20">
       <Breadcrumbs items={[
         { label: 'Content Management', path: '/content' },
         { label: id ? `Edit: ${contentItem.title}` : 'Create New Material' }

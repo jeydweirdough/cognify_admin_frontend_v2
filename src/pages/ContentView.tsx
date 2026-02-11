@@ -88,7 +88,7 @@ const ContentView: React.FC<{ user: User }> = ({ user }) => {
   if (!contentItem) return <div className="p-12 text-center text-muted-foreground animate-pulse">Scanning material database...</div>;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-20">
+    <div className="space-y-6 w-full pb-20">
       <Breadcrumbs items={[
         { label: 'Content Management', path: '/content' },
         { label: `View: ${contentItem.title}` }

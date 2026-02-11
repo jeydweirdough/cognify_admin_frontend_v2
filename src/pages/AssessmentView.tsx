@@ -75,7 +75,7 @@ const AssessmentView: React.FC<{ user: User }> = ({ user }) => {
   if (!assessment) return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading exam schema...</div>;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-20">
+    <div className="space-y-6 w-full pb-20">
       <Breadcrumbs items={[
         { label: 'Assessments', path: '/assessments' },
         { label: `Review: ${assessment.title}` }

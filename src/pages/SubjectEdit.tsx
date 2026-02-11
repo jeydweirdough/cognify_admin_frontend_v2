@@ -19,16 +19,19 @@ import {
   AlignLeft,
   Palette,
   RotateCcw,
+  FileText,
+  FileUp,
+  Link as LinkIcon
 } from 'lucide-react';
 import { Button, cn } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
-import type { ToastType } from '../components/ui/Toast';
 import { Toast } from '../components/ui/Toast';
+import type { ToastType } from '../components/ui/Toast';
 import { ConfirmationModal } from '../components/ui/ConfirmationModal';
-import type { PsychologySubject, PsychologyTopic,  User, } from '../types';
-import { ContentStatus, } from '../types';
+import type { PsychologySubject, PsychologyTopic, User } from '../types';
+import { ContentStatus } from '../types';
 import { logActivity } from '../services/logService';
 
 interface SubjectEditProps {
@@ -94,10 +97,10 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
   }, [selectedTopicId, subject.topics]);
 
   useEffect(() => {
-    if (editorRef.current && currentTopic) {
+    if (editorRef.current && currentTopic && currentTopic.format !== 'PDF') {
       editorRef.current.innerHTML = currentTopic.description || '';
     }
-  }, [selectedTopicId]);
+  }, [selectedTopicId, currentTopic?.format]);
 
   const showToast = (message: string, type: ToastType) => {
     setToast({ message, type, visible: true });
@@ -121,7 +124,8 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
       title: 'Untitled Module',
       description: '',
       subTopics: [],
-      status: ContentStatus.DRAFT
+      status: ContentStatus.DRAFT,
+      format: 'TEXT'
     };
     setSubject(prev => ({
       ...prev,
@@ -136,7 +140,8 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
       title: 'New Sub-Topic',
       description: '',
       subTopics: [],
-      status: ContentStatus.DRAFT
+      status: ContentStatus.DRAFT,
+      format: 'TEXT'
     };
     const updatedTopics = updateNodeInTree(subject.topics || [], parentId, {
       subTopics: [...(findTopic(subject.topics || [], parentId)?.subTopics || []), newSub]
@@ -226,6 +231,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
     const isExpanded = expandedNodes.has(node.id);
     const hasChildren = node.subTopics && node.subTopics.length > 0;
     const isRemovalPending = node.status === ContentStatus.REMOVAL_PENDING;
+    const isPDF = node.format === 'PDF';
     
     return (
       <div className="flex flex-col">
@@ -247,6 +253,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
                <ChevronRight className={cn("h-4 w-4 shrink-0 transition-transform", isExpanded && "rotate-90")} />
              </div>
             <span className={cn("text-sm truncate select-none flex items-center gap-2", isRemovalPending && "line-through text-rose-500")}>
+              {isPDF ? <FileUp className="h-3 w-3 opacity-70" /> : <FileText className="h-3 w-3 opacity-70" />}
               {node.title}
               {isRemovalPending && <Badge variant="destructive" className="h-4 text-[9px] px-1 py-0">Deleting</Badge>}
             </span>
@@ -359,7 +366,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
         {/* MAIN EDITOR AREA */}
         <main className="flex-1 overflow-y-auto bg-white">
           {selectedTopicId === 'metadata' ? (
-             <div className="p-10 max-w-2xl mx-auto space-y-8 animate-in fade-in duration-300">
+             <div className="p-10 w-full mx-auto space-y-8 animate-in fade-in duration-300">
                 <div className="space-y-1 border-b pb-4">
                   <h3 className="text-xl font-bold text-slate-900">Subject Information</h3>
                   <p className="text-sm text-muted-foreground">Branding and scope for the core shell.</p>
@@ -419,7 +426,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
                 </div>
              </div>
           ) : currentTopic ? (
-            <div className="p-10 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
+            <div className="p-10 w-full mx-auto space-y-8 animate-in fade-in duration-300">
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">Module Title</label>
                 <Input 
@@ -436,50 +443,95 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
               </div>
 
               <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">Content Format</label>
+                <div className="flex bg-muted/20 p-1 rounded-lg w-max mb-4">
+                  <button 
+                    onClick={() => handleUpdateTopic({ format: 'TEXT' })} 
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-md transition-all", 
+                      currentTopic.format !== 'PDF' ? "bg-white shadow text-primary" : "text-slate-500 hover:text-slate-700"
+                    )}
+                  >
+                    <FileText className="h-3.5 w-3.5" /> Text Module
+                  </button>
+                  <button 
+                    onClick={() => handleUpdateTopic({ format: 'PDF' })} 
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-md transition-all", 
+                      currentTopic.format === 'PDF' ? "bg-white shadow text-primary" : "text-slate-500 hover:text-slate-700"
+                    )}
+                  >
+                    <FileUp className="h-3.5 w-3.5" /> PDF Document
+                  </button>
+                </div>
+
                 <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">Content Body</label>
-                <div className={cn("border border-border rounded-xl overflow-hidden bg-white shadow-sm flex flex-col min-h-[500px]", currentTopic.status === ContentStatus.REMOVAL_PENDING && "opacity-50 pointer-events-none")}>
-                  {/* Toolbar */}
-                  <div className="flex items-center gap-1.5 p-3 bg-muted/20 border-b border-border shrink-0">
-                    <button 
-                      onClick={() => execCommand('bold')}
-                      className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
-                      title="Bold"
-                    >
-                      <Bold className="h-3.5 w-3.5" />
-                    </button>
-                    <button 
-                      onClick={() => execCommand('italic')}
-                      className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
-                      title="Italic"
-                    >
-                      <Italic className="h-3.5 w-3.5" />
-                    </button>
-                    <button 
-                      onClick={() => execCommand('insertUnorderedList')}
-                      className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
-                      title="List"
-                    >
-                      <List className="h-3.5 w-3.5" />
-                    </button>
-                    <div className="w-[1px] h-4 bg-border mx-1" />
-                    <button 
-                      onClick={() => execCommand('formatBlock', 'H2')}
-                      className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
-                      title="Heading"
-                    >
-                      <Heading2 className="h-3.5 w-3.5" />
-                    </button>
+                
+                {currentTopic.format === 'PDF' ? (
+                  <div className={cn("border-2 border-dashed border-slate-300 rounded-xl p-12 flex flex-col items-center justify-center bg-slate-50/50", currentTopic.status === ContentStatus.REMOVAL_PENDING && "opacity-50 pointer-events-none")}>
+                     <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+                        <FileUp className="h-8 w-8 text-primary/60" />
+                     </div>
+                     <h3 className="text-sm font-bold text-slate-700">PDF Document Link</h3>
+                     <p className="text-xs text-muted-foreground mb-6">Provide a direct link to the hosted PDF file.</p>
+                     <div className="flex w-full max-w-md items-center gap-2">
+                        <div className="relative flex-1">
+                          <LinkIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            placeholder="https://drive.google.com/file/d/..." 
+                            className="pl-9 bg-white" 
+                            value={currentTopic.fileUrl || ''} 
+                            onChange={(e) => handleUpdateTopic({ fileUrl: e.target.value })}
+                          />
+                        </div>
+                        <Button variant="outline">Browse</Button>
+                     </div>
                   </div>
-                  
-                  {/* Editor */}
-                  <div 
-                    ref={editorRef}
-                    contentEditable
-                    onBlur={(e) => handleUpdateTopic({ description: e.currentTarget.innerHTML })}
+                ) : (
+                  <div className={cn("border border-border rounded-xl overflow-hidden bg-white shadow-sm flex flex-col min-h-[500px]", currentTopic.status === ContentStatus.REMOVAL_PENDING && "opacity-50 pointer-events-none")}>
+                    {/* Toolbar */}
+                    <div className="flex items-center gap-1.5 p-3 bg-muted/20 border-b border-border shrink-0">
+                      <button 
+                        onClick={() => execCommand('bold')}
+                        className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
+                        title="Bold"
+                      >
+                        <Bold className="h-3.5 w-3.5" />
+                      </button>
+                      <button 
+                        onClick={() => execCommand('italic')}
+                        className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
+                        title="Italic"
+                      >
+                        <Italic className="h-3.5 w-3.5" />
+                      </button>
+                      <button 
+                        onClick={() => execCommand('insertUnorderedList')}
+                        className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
+                        title="List"
+                      >
+                        <List className="h-3.5 w-3.5" />
+                      </button>
+                      <div className="w-[1px] h-4 bg-border mx-1" />
+                      <button 
+                        onClick={() => execCommand('formatBlock', 'H2')}
+                        className="h-8 w-8 flex items-center justify-center rounded hover:bg-white text-slate-600 hover:text-primary transition-all shadow-sm border border-transparent hover:border-border"
+                        title="Heading"
+                      >
+                        <Heading2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    
+                    {/* Editor */}
+                    <div 
+                      ref={editorRef}
+                      contentEditable
+                      onBlur={(e) => handleUpdateTopic({ description: e.currentTarget.innerHTML })}
                     data-placeholder="Describe content here..."
                     className="flex-1 p-8 text-sm leading-relaxed text-slate-700 outline-none prose prose-slate max-w-none empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:pointer-events-none"
-                  />
-                </div>
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ) : (

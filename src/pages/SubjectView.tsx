@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
@@ -13,7 +14,10 @@ import {
   Edit,
   CircleDashed,
   CheckCircle2,
-  Trash2
+  Trash2,
+  FileUp,
+  FileText,
+  Download
 } from 'lucide-react';
 import { Button, cn } from '../components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
@@ -152,6 +156,7 @@ const SubjectView: React.FC<{ user: User }> = ({ user }) => {
           const isSelected = selectedTopicId === node.id;
           const isApproved = node.status === ContentStatus.APPROVED;
           const isRemovalPending = node.status === ContentStatus.REMOVAL_PENDING;
+          const isPDF = node.format === 'PDF';
           
           return (
             <div key={node.id} className="pl-2">
@@ -185,7 +190,8 @@ const SubjectView: React.FC<{ user: User }> = ({ user }) => {
                   <CircleDashed className="h-3 w-3 text-amber-500 shrink-0" />
                 )}
                 
-                <span className={cn("truncate", isRemovalPending && "line-through text-rose-600")}>
+                <span className={cn("truncate flex items-center gap-2", isRemovalPending && "line-through text-rose-600")}>
+                  {isPDF ? <FileUp className="h-3 w-3 opacity-70" /> : <FileText className="h-3 w-3 opacity-70" />}
                   {node.title}
                 </span>
                 
@@ -206,7 +212,7 @@ const SubjectView: React.FC<{ user: User }> = ({ user }) => {
   if (!subject) return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading subject repository...</div>;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-20">
+    <div className="space-y-6 w-full pb-20">
       <Breadcrumbs items={[
         { label: 'Repository', path: '/subjects' },
         { label: `Review: ${subject.name}` }
@@ -301,10 +307,21 @@ const SubjectView: React.FC<{ user: User }> = ({ user }) => {
                          </div>
                        )}
 
-                       <div 
-                         className="prose prose-slate max-w-none text-sm text-slate-600 leading-relaxed"
-                         dangerouslySetInnerHTML={{ __html: selectedTopic.description || '<p class="italic opacity-50">No content description provided.</p>' }}
-                       />
+                       {selectedTopic.format === 'PDF' ? (
+                         <div className="flex flex-col items-center justify-center p-12 border rounded-xl bg-slate-50 text-center">
+                           <FileText className="h-16 w-16 text-primary/40 mb-4" />
+                           <h3 className="text-lg font-bold">PDF Document</h3>
+                           <p className="text-sm text-muted-foreground mb-6">This unit is a PDF document resource.</p>
+                           <Button onClick={() => window.open(selectedTopic.fileUrl, '_blank')} disabled={!selectedTopic.fileUrl}>
+                             <Download className="mr-2 h-4 w-4" /> Open Document
+                           </Button>
+                         </div>
+                       ) : (
+                         <div 
+                           className="prose prose-slate max-w-none text-sm text-slate-600 leading-relaxed"
+                           dangerouslySetInnerHTML={{ __html: selectedTopic.description || '<p class="italic opacity-50">No content description provided.</p>' }}
+                         />
+                       )}
                     </div>
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50">

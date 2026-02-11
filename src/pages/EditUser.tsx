@@ -73,7 +73,7 @@ const EditUser: React.FC<{ loggedInUser: User }> = ({ loggedInUser }) => {
   if (!userData) return <div className="p-8 text-center">Loading user profile...</div>;
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 w-full mx-auto">
       <Breadcrumbs items={[
         isAdmin ? { label: 'User Management', path: '/users' } : { label: 'My Dashboard', path: '/dashboard' },
         { label: isSelf ? 'My Profile' : `Edit ${userData.name}` }

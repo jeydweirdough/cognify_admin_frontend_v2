@@ -351,7 +351,7 @@ const AssessmentEdit: React.FC<{ user: User }> = ({ user }) => {
         {/* MAIN EDITOR AREA */}
         <main className="flex-1 overflow-y-auto bg-white">
           {selectedId === 'settings' ? (
-             <div className="p-10 max-w-2xl mx-auto space-y-8 animate-in fade-in duration-300">
+             <div className="p-10 w-full mx-auto space-y-8 animate-in fade-in duration-300">
                 <div className="space-y-1 border-b pb-4">
                   <h3 className="text-xl font-bold text-slate-900">Assessment Configuration</h3>
                   <p className="text-sm text-muted-foreground">Define the scope, timing, and categorization of the exam.</p>
@@ -476,7 +476,7 @@ const AssessmentEdit: React.FC<{ user: User }> = ({ user }) => {
                 </div>
              </div>
           ) : currentQuestion ? (
-            <div className="p-10 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
+            <div className="p-10 w-full mx-auto space-y-8 animate-in fade-in duration-300">
               <div className="flex justify-between items-center border-b pb-4">
                  <div>
                    <h3 className="text-lg font-bold text-slate-900">Edit Question</h3>
