@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Menu, User, Bell, Settings, ChevronDown, Laptop, RotateCcw, Maximize } from 'lucide-react';
-import { NAVIGATION_ITEMS, THEMES } from '../constants';
+import { LogOut, Menu, User, Bell, Settings, ChevronDown } from 'lucide-react';
+import { NAVIGATION_ITEMS, PERMISSION_MODULES, THEMES } from '../constants';
 import { UserRole } from '../types';
 import { Button } from './ui/Button';
 import { cn } from './ui/Button';
@@ -40,22 +40,21 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
         setRolePermissions(userRoleConfig.permissions);
       }
     } else {
+      // Fallback defaults if no config exists in local storage
       if (user.role === UserRole.ADMIN) {
+        // Admin gets everything
+        setRolePermissions(PERMISSION_MODULES.flatMap(m => m.actions.map(a => a.id)));
+      } else if (user.role === UserRole.FACULTY) {
         setRolePermissions([
           'view_dashboard', 
-          'manage_curriculum',
-          'view_users', 
-          'edit_users', 
-          'manage_whitelist', 
-          'manage_content', 
-          'create_exams', 
-          'view_analytics', 
-          'system_settings'
+          'view_subjects', 'edit_subjects',
+          'view_content', 'create_content', 'edit_content', 
+          'view_assessments', 'create_assessments', 
+          'view_analytics'
         ]);
-      } else if (user.role === UserRole.FACULTY) {
-        setRolePermissions(['view_dashboard', 'manage_curriculum', 'manage_content', 'create_exams', 'view_analytics']);
       } else {
-        setRolePermissions(['view_dashboard', 'manage_curriculum', 'view_analytics']);
+        // Student
+        setRolePermissions(['view_dashboard', 'view_analytics']);
       }
     }
   }, [user.role, location.pathname]);
@@ -123,19 +122,6 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="h-10 border-b bg-card flex items-center justify-between px-6 shrink-0">
-          <div className="text-[11px] font-medium text-muted-foreground flex items-center gap-4 mx-auto">
-            CVSU-B Admin Mastery Hub
-          </div>
-          <div className="flex items-center gap-3 text-muted-foreground">
-             <div className="flex items-center gap-1.5 text-[11px] font-medium">
-               <Laptop className="h-3 w-3" /> Device
-             </div>
-             <RotateCcw className="h-3 w-3 cursor-pointer hover:text-foreground transition-colors" onClick={() => window.location.reload()} />
-             <Maximize className="h-3 w-3 cursor-pointer hover:text-foreground transition-colors" />
-          </div>
-        </div>
-
         <header className="flex h-16 items-center justify-between border-b px-6 bg-card shrink-0">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>

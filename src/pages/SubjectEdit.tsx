@@ -527,8 +527,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = () => {
                       ref={editorRef}
                       contentEditable
                       onBlur={(e) => handleUpdateTopic({ description: e.currentTarget.innerHTML })}
-                    data-placeholder="Describe content here..."
-                    className="flex-1 p-8 text-sm leading-relaxed text-slate-700 outline-none prose prose-slate max-w-none empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:pointer-events-none"
+                      className="flex-1 p-8 text-sm leading-relaxed text-slate-700 outline-none prose prose-slate max-w-none"
                     />
                   </div>
                 )}

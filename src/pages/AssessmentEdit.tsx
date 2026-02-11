@@ -41,7 +41,6 @@ const AssessmentEdit: React.FC<{ user: User }> = ({ user }) => {
     title: '',
     type: AssessmentType.QUIZ,
     subject: '', // Stores Subject ID or Name
-    subjectId: '', // Explicit ID
     topicId: '',
     timeLimit: 30,
     items: 0,
@@ -101,7 +100,7 @@ const AssessmentEdit: React.FC<{ user: User }> = ({ user }) => {
     if (type === AssessmentType.PRE_ASSESSMENT || type === AssessmentType.POST_ASSESSMENT) {
       // Rule: 1 Pre/Post per Subject
       const exists = otherAssessments.find(a => 
-        a.type === type && (a.subject === subjectIdentifier || a.subjectId === subjectIdentifier)
+        a.type === type && (a.subject === subjectIdentifier)
       );
       
       if (exists) {
@@ -119,7 +118,7 @@ const AssessmentEdit: React.FC<{ user: User }> = ({ user }) => {
 
       const exists = otherAssessments.find(a => 
         a.type === AssessmentType.QUIZ && 
-        (a.subject === subjectIdentifier || a.subjectId === subjectIdentifier) &&
+        (a.subject === subjectIdentifier) &&
         a.topicId === topicIdentifier
       );
 
@@ -381,7 +380,6 @@ const AssessmentEdit: React.FC<{ user: User }> = ({ user }) => {
                         onChange={e => setAssessment({
                           ...assessment, 
                           subject: e.target.value,
-                          subjectId: e.target.value, // In this implementation, value is ID or Name, better to use ID if robust
                           topicId: '' // Reset topic when subject changes
                         })}
                       >

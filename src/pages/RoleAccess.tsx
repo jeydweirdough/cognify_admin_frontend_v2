@@ -1,31 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  ShieldCheck, 
   Plus, 
   Check, 
   Save, 
   Loader2, 
-  ShieldAlert, 
-  Key, 
-  Database,
   Trash2,
   Edit2,
   LayoutGrid,
   Users,
   Lock,
-  MoreVertical
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { Dialog } from '../components/ui/Dialog';
-import { Toast, ToastType } from '../components/ui/Toast';
+import { Toast } from '../components/ui/Toast';
+import type { ToastType } from '../components/ui/Toast';
 import { ConfirmationModal } from '../components/ui/ConfirmationModal';
 import { PERMISSION_MODULES } from '../constants';
 import { cn } from '../components/ui/Button';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '../components/ui/DropdownMenu';
 
 const INITIAL_ROLES = [
   { 
@@ -255,9 +250,9 @@ const RoleAccess: React.FC = () => {
               <div className="grid grid-cols-1 gap-6">
                 {PERMISSION_MODULES.map((module) => {
                   const allActions = module.actions.map(a => a.id);
-                  const activeCount = module.actions.filter(a => selectedRole.permissions.includes(a.id)).length;
-                  const isAllChecked = activeCount === module.actions.length;
-                  const isIndeterminate = activeCount > 0 && !isAllChecked;
+                  // const activeCount = module.actions.filter(a => selectedRole.permissions.includes(a.id)).length;
+                  // const isAllChecked = activeCount === module.actions.length;
+                  // const isIndeterminate = activeCount > 0 && !isAllChecked;
 
                   return (
                     <div key={module.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">

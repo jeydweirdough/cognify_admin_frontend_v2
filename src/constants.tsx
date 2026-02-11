@@ -20,12 +20,12 @@ export const COLORS = {
 
 export const NAVIGATION_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, requiredPermission: 'view_dashboard' },
-  { id: 'subjects', label: 'Institutional Repository', icon: <Layers size={20} />, requiredPermission: 'manage_curriculum' },
+  { id: 'subjects', label: 'Institutional Repository', icon: <Layers size={20} />, requiredPermission: 'view_subjects' },
   { id: 'users', label: 'User Management', icon: <Users size={20} />, requiredPermission: 'view_users' },
-  { id: 'whitelist', label: 'Whitelisting', icon: <UserCheck size={20} />, requiredPermission: 'manage_whitelist' },
-  { id: 'assessments', label: 'Assessments', icon: <ClipboardCheck size={20} />, requiredPermission: 'create_exams' },
+  { id: 'whitelist', label: 'Whitelisting', icon: <UserCheck size={20} />, requiredPermission: 'view_whitelist' },
+  { id: 'assessments', label: 'Assessments', icon: <ClipboardCheck size={20} />, requiredPermission: 'view_assessments' },
   { id: 'analytics', label: 'Analytics', icon: <BarChart3 size={20} />, requiredPermission: 'view_analytics' },
-  { id: 'security', label: 'Security & Logs', icon: <ShieldAlert size={20} />, requiredPermission: 'system_settings' },
+  { id: 'security', label: 'Security & Logs', icon: <ShieldAlert size={20} />, requiredPermission: 'view_logs' },
 ];
 
 export const THEMES = [
@@ -35,18 +35,90 @@ export const THEMES = [
   { name: 'Midnight Purple', primary: 'bg-indigo-900', text: 'text-indigo-900', border: 'border-indigo-900' },
 ];
 
-export const DEFAULT_PERMISSIONS = [
-  { id: 'view_dashboard', name: 'View Dashboard', description: 'Access to the main overview and stats' },
-  { id: 'manage_curriculum', name: 'Manage Curriculum', description: 'Can access the psychology core repository and edit topic trees' },
-  { id: 'view_users', name: 'View Users', description: 'Can view list of all users' },
-  { id: 'edit_users', name: 'Edit Users', description: 'Can modify user details and status' },
-  { id: 'manage_whitelist', name: 'Manage Whitelist', description: 'Can approve and upload whitelist entries' },
-  { id: 'manage_content', name: 'Manage Content', description: 'Can create and edit review materials' },
-  { id: 'create_exams', name: 'Create Exams', description: 'Can create and schedule assessments' },
-  { id: 'view_analytics', name: 'View Analytics', description: 'Can access student performance reports' },
-  { id: 'system_settings', name: 'System Settings', description: 'Can modify institutional thresholds and theme' },
-  { id: 'manage_backup', name: 'Manage System Backups', description: 'Can export and import full system institutional data JSON files' },
+export const PERMISSION_MODULES = [
+  {
+    id: 'dashboard',
+    name: 'Dashboard',
+    description: 'Main overview and statistics',
+    actions: [
+      { id: 'view_dashboard', label: 'View Dashboard' }
+    ]
+  },
+  {
+    id: 'subjects',
+    name: 'Subjects Repository',
+    description: 'Curriculum and core subjects management',
+    actions: [
+      { id: 'view_subjects', label: 'View' },
+      { id: 'create_subjects', label: 'Create' },
+      { id: 'edit_subjects', label: 'Edit' },
+      { id: 'delete_subjects', label: 'Delete' }
+    ]
+  },
+  {
+    id: 'users',
+    name: 'User Management',
+    description: 'Faculty and student accounts',
+    actions: [
+      { id: 'view_users', label: 'View' },
+      { id: 'create_users', label: 'Create' },
+      { id: 'edit_users', label: 'Edit' },
+      { id: 'delete_users', label: 'Delete' }
+    ]
+  },
+  {
+    id: 'whitelist',
+    name: 'Whitelist',
+    description: 'Pre-registration approval list',
+    actions: [
+      { id: 'view_whitelist', label: 'View' },
+      { id: 'manage_whitelist', label: 'Manage (Add/Remove)' }
+    ]
+  },
+  {
+    id: 'content',
+    name: 'Content Materials',
+    description: 'Review modules and resources',
+    actions: [
+      { id: 'view_content', label: 'View' },
+      { id: 'create_content', label: 'Create' },
+      { id: 'edit_content', label: 'Edit' },
+      { id: 'delete_content', label: 'Delete' }
+    ]
+  },
+  {
+    id: 'assessments',
+    name: 'Assessments',
+    description: 'Exams and quizzes',
+    actions: [
+      { id: 'view_assessments', label: 'View' },
+      { id: 'create_assessments', label: 'Create' },
+      { id: 'edit_assessments', label: 'Edit' },
+      { id: 'delete_assessments', label: 'Delete' }
+    ]
+  },
+  {
+    id: 'analytics',
+    name: 'Analytics',
+    description: 'Performance reports',
+    actions: [
+      { id: 'view_analytics', label: 'View Reports' }
+    ]
+  },
+  {
+    id: 'settings',
+    name: 'System Settings',
+    description: 'Global configuration and logs',
+    actions: [
+      { id: 'view_settings', label: 'View Settings' },
+      { id: 'edit_settings', label: 'Edit Config' },
+      { id: 'manage_backup', label: 'Backups' },
+      { id: 'view_logs', label: 'Security Logs' }
+    ]
+  }
 ];
+
+export const DEFAULT_PERMISSIONS = PERMISSION_MODULES.flatMap(m => m.actions.map(a => ({ id: a.id, name: a.label, description: m.name })));
 
 // Restore the default core subjects for the Psychology board exam curriculum to satisfy imports in core hub pages.
 export const INITIAL_CORE_SUBJECTS: PsychologySubject[] = [
