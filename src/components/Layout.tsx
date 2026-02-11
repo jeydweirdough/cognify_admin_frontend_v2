@@ -78,7 +78,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen w-full overflow-hidden bg-background">
       <aside className={cn(
         "z-30 h-full border-r bg-card transition-all duration-300 ease-in-out flex flex-col shadow-sm",
         isSidebarOpen ? "w-64" : "w-20"
